@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Special Cards — мемори на парные карточки</title>
+  <meta name="description" content="Мемори-игра для тренировки памяти: находите парные карточки по темам любимых игр.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="stage-wrap">
+    <!-- Slogans — matching game (1440 × 960) -->
+    <main class="stage" id="stage">
+
+      <!-- Navigation -->
+      <header class="nav">
+        <div class="badge">
+          <span class="badge__label">Special Cards</span>
+          <span class="badge__sep" aria-hidden="true">&gt;</span>
+        </div>
+        <p class="crumb" id="crumb" aria-live="polite"></p>
+
+        <!-- Table dropdown: каталог всех разделов -->
+        <button class="table-dd" id="catalogBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="catalog">
+          <span class="table-dd__label">Таблица</span>
+          <svg class="table-dd__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" stroke="#666570" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <div class="nav__divider"></div>
+      </header>
+
+      <!-- Timer and slogans -->
+      <section class="side" aria-label="Управление игрой">
+        <div class="timer" role="timer" aria-label="Время партии">
+          <span id="timer">00:00</span>
+          <span class="timer__freeze" id="freezeChip" hidden></span>
+        </div>
+        <button class="restart" id="restartBtn" type="button">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M13 8a5 5 0 1 1-1.6-3.7M13 2.5V5h-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Заново
+        </button>
+        <p class="stats" id="stats"></p>
+
+        <!-- Выбор раздела -->
+        <div class="picker">
+          <h2 class="picker__label" id="gamesLabel">Игра</h2>
+          <div class="games" id="games" role="group" aria-labelledby="gamesLabel"></div>
+
+          <h2 class="picker__label" id="sectionsLabel">Раздел</h2>
+          <div class="sections" id="sections" role="group" aria-labelledby="sectionsLabel"></div>
+        </div>
+
+        <h2 class="abilities-title">Способности</h2>
+
+        <!-- Slogan placeholder 1 -->
+        <button class="ability ability--hint" id="hintBtn" type="button" title="Подсветить одну пару">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+            <path d="M18 5a9 9 0 0 0-5.4 16.2c.9.7 1.4 1.7 1.4 2.8v1h8v-1c0-1.1.5-2.1 1.4-2.8A9 9 0 0 0 18 5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M14.5 29.5h7M16 33h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="ability__name">Подсказка</span>
+          <span class="ability__count" id="hintCount">3</span>
+        </button>
+
+        <!-- Slogan placeholder 2 -->
+        <button class="ability ability--freeze" id="freezeBtn" type="button" title="Остановить таймер на 10 секунд">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+            <path d="M18 4v28M5.9 11l24.2 14M30.1 11 5.9 25" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="m14 6 4 4 4-4M14 30l4-4 4 4M5 16.5l5.5-1.5L9 9.5M31 16.5l-5.5-1.5L27 9.5M5 19.5l5.5 1.5L9 26.5M31 19.5l-5.5 1.5L27 26.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="ability__name">Заморозка</span>
+          <span class="ability__count" id="freezeCount">3</span>
+        </button>
+      </section>
+
+      <!-- Game board -->
+      <section class="board" aria-label="Игровое поле">
+        <!-- 6 × 6 tile grid -->
+        <div class="grid" id="grid"></div>
+
+        <div class="win" id="win" hidden>
+          <div class="win__card" role="dialog" aria-labelledby="winTitle">
+            <h2 class="win__title" id="winTitle">Все пары найдены!</h2>
+            <p class="win__text" id="winText"></p>
+            <div class="win__actions">
+              <button class="btn btn--primary" id="againBtn" type="button">Сыграть ещё раз</button>
+              <button class="btn" id="nextBtn" type="button">Следующий раздел</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Каталог разделов -->
+      <div class="catalog" id="catalog" role="dialog" aria-label="Таблица разделов" hidden>
+        <div class="catalog__head">
+          <h2 class="catalog__title">Таблица разделов</h2>
+          <p class="catalog__hint">Что лежит в каждом разделе — выберите любой, чтобы начать партию.</p>
+          <div class="catalog__tabs" id="catalogTabs" role="tablist"></div>
+        </div>
+        <div class="catalog__body" id="catalogBody"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="sections.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
